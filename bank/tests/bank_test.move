@@ -190,4 +190,48 @@ module bank_package::bank_test {
         
         test_scenario::end(scenario);
     }
+
+    #[test]
+    fun test_multiple_withdrawals() {
+        let mut scenario = test_scenario::begin(ALICE);
+        
+        Bank::new<TEST_COIN>(test_scenario::ctx(&mut scenario));
+        
+        // deposits
+        test_scenario::next_tx(&mut scenario, ALICE);
+        {
+            let mut bank = test_scenario::take_shared<AssetBank<TEST_COIN>>(&scenario);
+            let coin1 = coin::mint_for_testing<TEST_COIN>(100, test_scenario::ctx(&mut scenario));
+            Bank::deposit(&mut bank, coin1, test_scenario::ctx(&mut scenario));
+            test_scenario::return_shared(bank);
+        };
+
+        test_scenario::next_tx(&mut scenario, ALICE);
+        {
+            let mut bank = test_scenario::take_shared<AssetBank<TEST_COIN>>(&scenario);
+            let coin2 = coin::mint_for_testing<TEST_COIN>(200, test_scenario::ctx(&mut scenario));
+            Bank::deposit(&mut bank, coin2, test_scenario::ctx(&mut scenario));
+            test_scenario::return_shared(bank);
+        };
+
+        // withdrawals
+        test_scenario::next_tx(&mut scenario, ALICE);
+
+         {
+            let mut bank = test_scenario::take_shared<AssetBank<TEST_COIN>>(&scenario);
+            let receipt1 = test_scenario::take_from_sender<Receipt<TEST_COIN>>(&scenario);
+            Bank::withdraw(&mut bank, receipt1, test_scenario::ctx(&mut scenario));
+            test_scenario::return_shared(bank);
+        };
+
+        test_scenario::next_tx(&mut scenario, ALICE);
+        {
+            let mut bank = test_scenario::take_shared<AssetBank<TEST_COIN>>(&scenario);
+            let receipt2 = test_scenario::take_from_sender<Receipt<TEST_COIN>>(&scenario);
+            Bank::withdraw(&mut bank, receipt2, test_scenario::ctx(&mut scenario));
+            test_scenario::return_shared(bank);
+        };
+
+        test_scenario::end(scenario);
+    }
 }
