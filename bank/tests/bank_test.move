@@ -5,7 +5,7 @@ module bank_package::bank_test {
     use sui::coin::{Self, Coin};
     use bank_package::Bank::{Self, AssetBank, Receipt};
 
-    // Test-only coin type with store ability
+    // Test-only coin type
     public struct TEST_COIN has drop, store {}
 
     const ALICE: address = @0xA11CE;
@@ -16,6 +16,7 @@ module bank_package::bank_test {
     fun test_basics() {
         let mut scenario = test_scenario::begin(ALICE);
         let test_coin = coin::mint_for_testing<TEST_COIN>(100, test_scenario::ctx(&mut scenario));
+        
         let mut num_of_deposits = 0;
         let mut num_of_nfts = 0;
         let mut num_of_events = 0;
@@ -39,6 +40,7 @@ module bank_package::bank_test {
 
             test_scenario::return_shared(bank);
 
+            // Finalize tx and get tx info
             let tx_info = test_scenario::next_tx(&mut scenario, ALICE);
             
             // Check to make sure ALICE is owner of Receipt NFT
@@ -77,7 +79,6 @@ module bank_package::bank_test {
             test_scenario::return_shared(bank);
             test_scenario::return_to_sender(&scenario, coin);
         };
-
         test_scenario::end(scenario).num_user_events();
     }
 
@@ -95,7 +96,6 @@ module bank_package::bank_test {
             Bank::deposit(&mut bank, test_coin, test_scenario::ctx(&mut scenario));
             test_scenario::return_shared(bank);
         };
-        
         test_scenario::end(scenario);
     }
 
@@ -123,7 +123,6 @@ module bank_package::bank_test {
             Bank::withdraw(&mut bank, receipt, test_scenario::ctx(&mut scenario));
             test_scenario::return_shared(bank);
         };
-        
         test_scenario::end(scenario);
     }
 
@@ -151,7 +150,6 @@ module bank_package::bank_test {
             Bank::withdraw(&mut bank, receipt, test_scenario::ctx(&mut scenario));
             test_scenario::return_shared(bank);
         };
-        
         test_scenario::end(scenario);
     }
 
@@ -160,7 +158,7 @@ module bank_package::bank_test {
         let mut scenario = test_scenario::begin(ALICE);
         
         Bank::new<TEST_COIN>(test_scenario::ctx(&mut scenario));
-        
+
         // First deposit
         test_scenario::next_tx(&mut scenario, ALICE);
         {
@@ -193,7 +191,6 @@ module bank_package::bank_test {
             test_scenario::return_to_sender(&scenario, receipt1);
             test_scenario::return_to_sender(&scenario, receipt2);
         };
-        
         test_scenario::end(scenario);
     }
 
@@ -222,8 +219,7 @@ module bank_package::bank_test {
 
         // withdrawals
         test_scenario::next_tx(&mut scenario, ALICE);
-
-         {
+        {
             let mut bank = test_scenario::take_shared<AssetBank<TEST_COIN>>(&scenario);
             let receipt1 = test_scenario::take_from_sender<Receipt<TEST_COIN>>(&scenario);
             Bank::withdraw(&mut bank, receipt1, test_scenario::ctx(&mut scenario));
@@ -237,7 +233,6 @@ module bank_package::bank_test {
             Bank::withdraw(&mut bank, receipt2, test_scenario::ctx(&mut scenario));
             test_scenario::return_shared(bank);
         };
-
         test_scenario::end(scenario);
     }
 }
