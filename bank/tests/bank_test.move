@@ -1,10 +1,8 @@
 #[test_only]
+#[allow(implicit_const_copy)]
 module bank_package::bank_test {
-    use sui::object::{Self, UID};
-    use sui::test_scenario::{Self, Scenario};
+    use sui::test_scenario::{Self};
     use sui::coin::{Self, Coin};
-    use sui::transfer;
-    use sui::tx_context;
     use bank_package::Bank::{Self, AssetBank, Receipt};
 
     // Test-only coin type with store ability
@@ -14,6 +12,7 @@ module bank_package::bank_test {
     const BOB: address = @0xB0B;
 
     #[test]
+    #[allow(unused_assignment)]
     fun test_basics() {
         let mut scenario = test_scenario::begin(ALICE);
         let test_coin = coin::mint_for_testing<TEST_COIN>(100, test_scenario::ctx(&mut scenario));
@@ -40,7 +39,14 @@ module bank_package::bank_test {
 
             test_scenario::return_shared(bank);
 
-            num_of_events = test_scenario::next_tx(&mut scenario, ALICE).num_user_events();
+            let tx_info = test_scenario::next_tx(&mut scenario, ALICE);
+            
+            // Check to make sure ALICE is owner of Receipt NFT
+            let nft_info = tx_info.transferred_to_account();
+            let nft_owner = nft_info.get(&nft_info.keys()[0]);
+            assert!(nft_owner == ALICE);
+
+            num_of_events = tx_info.num_user_events();
             // check that deposit event was emitted
             assert!(num_of_events == 1);
         };
