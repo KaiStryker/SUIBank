@@ -64,7 +64,6 @@ module bank_package::Bank {
             number_of_active_nfts: 0,
             coin_balance: balance::zero()
         };
-
        transfer::share_object(bank);
     }
 
