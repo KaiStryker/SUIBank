@@ -11,9 +11,24 @@ This project implements a basic bank smart contract on the SUI blockchain, allow
 ## Getting Started
 
 ### Installation
-1. Clone the repository
-2. Cd into repo
-3. Build the project:
+1. Install Sui
+```bash
+### Installation Steps
+1. Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+2. Install Sui
+# For macOS
+brew install sui
+
+# For Linux
+cargo install --locked --git https://github.com/MystenLabs/sui.git --tag mainnet-v1.20.0 sui
+
+3. Verify Install 
+sui --version
+```
+2. Clone the repository
+3. Cd into repo
+4. Build the project:
 ```bash
 git clone https://github.com/KaiStryker/SUIBank.git
 cd SUIBank
