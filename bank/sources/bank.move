@@ -26,7 +26,7 @@ module bank_package::Bank {
     }
 
     /// Holds coin balances and tracks total deposits and active NFTs
-    public struct AssetBank<phantom T> has key {
+    public struct AssetBank<phantom T> has store, key {
         id: UID,
         number_of_deposits: u64,
         number_of_active_nfts: u64,
@@ -52,7 +52,7 @@ module bank_package::Bank {
             number_of_active_nfts: 0,
             coin_balance: balance::zero()
         };
-        transfer::share_object(bank);
+        transfer::public_share_object(bank);
     }
    
     /// Test-only bank creation
@@ -64,7 +64,7 @@ module bank_package::Bank {
             number_of_active_nfts: 0,
             coin_balance: balance::zero()
         };
-       transfer::share_object(bank);
+       transfer::public_share_object(bank);
     }
 
     /// Handles coin deposits and mints receipt NFTs
