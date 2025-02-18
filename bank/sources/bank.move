@@ -64,7 +64,7 @@ module bank_package::Bank {
             number_of_active_nfts: 0,
             coin_balance: balance::zero()
         };
-       transfer::public_share_object(bank);
+        transfer::public_share_object(bank);
     }
 
     /// Handles coin deposits and mints receipt NFTs
